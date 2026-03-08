@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { ChefHat } from 'lucide-react'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,7 +41,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Essenswochenplaner</CardTitle>
+          <div className="flex justify-center mb-2">
+            <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+              <ChefHat className="h-7 w-7" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl">Dishboard</CardTitle>
           <CardDescription>Melde dich an</CardDescription>
         </CardHeader>
         <form onSubmit={handleLogin}>

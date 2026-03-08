@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Essenswochenplaner',
-  description: 'Personalisierte Wochenplanung von Mahlzeiten',
+  title: 'Dishboard',
+  description: 'Dein persönlicher Essenswochenplaner',
 }
 
 export default function RootLayout({
