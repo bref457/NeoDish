@@ -168,37 +168,37 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
   }))
 
   return (
-    <div className="flex gap-4 h-full">
-      <RecipeSidebar recipes={recipes} />
+    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <div className="flex gap-4 h-full">
+        <RecipeSidebar recipes={recipes} />
 
-      <div className="flex-1 min-w-0 flex flex-col gap-3">
-        {/* Week navigation */}
-        <div className="flex items-center justify-between">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setWeekStart((w) => addDays(w, -7))}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <div className="text-sm font-medium text-center">
-            {loading ? (
-              <span className="text-muted-foreground">Laden...</span>
-            ) : (
-              formatWeekLabel(weekStart)
-            )}
+        <div className="flex-1 min-w-0 flex flex-col gap-3">
+          {/* Week navigation */}
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setWeekStart((w) => addDays(w, -7))}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="text-sm font-medium text-center">
+              {loading ? (
+                <span className="text-muted-foreground">Laden...</span>
+              ) : (
+                formatWeekLabel(weekStart)
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setWeekStart((w) => addDays(w, 7))}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setWeekStart((w) => addDays(w, 7))}
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
 
-        {/* 7-column grid */}
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          {/* 7-column grid */}
           <div className="grid grid-cols-7 gap-2">
             {days.map(({ index, label, date }) => (
               <DayColumn
@@ -211,16 +211,16 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
               />
             ))}
           </div>
-
-          <DragOverlay>
-            {activeDragRecipe && (
-              <div className="bg-background border-2 border-primary rounded-md px-3 py-2 shadow-lg text-sm font-medium pointer-events-none">
-                {activeDragRecipe.name}
-              </div>
-            )}
-          </DragOverlay>
-        </DndContext>
+        </div>
       </div>
-    </div>
+
+      <DragOverlay>
+        {activeDragRecipe && (
+          <div className="bg-background border-2 border-primary rounded-md px-3 py-2 shadow-lg text-sm font-medium pointer-events-none">
+            {activeDragRecipe.name}
+          </div>
+        )}
+      </DragOverlay>
+    </DndContext>
   )
 }
