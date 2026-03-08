@@ -15,6 +15,7 @@ import { createClient } from '@/lib/supabase/client'
 import { MealPlan, MealSlotType, Recipe, DAY_LABELS } from '@/lib/types'
 import DayColumn from './DayColumn'
 import RecipeSidebar from './RecipeSidebar'
+import MobilePlanerView from './MobilePlanerView'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
@@ -84,6 +85,43 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
     loadMealPlans()
   }, [loadMealPlans])
 
+  // Shared assign logic (used by both DnD and mobile tap)
+  async function handleAssign(dayOfWeek: number, mealSlot: MealSlotType, recipeId: string) {
+    const recipe = recipes.find(r => r.id === recipeId)
+    if (!recipe) return
+
+    const weekStartStr = formatWeekStart(weekStart)
+    const existing = mealPlans.find(
+      mp => mp.day_of_week === dayOfWeek && mp.meal_slot === mealSlot && mp.week_start === weekStartStr
+    )
+
+    if (existing?.recipe_id === recipeId) return
+
+    try {
+      if (existing) {
+        const { error } = await supabase
+          .from('meal_plans')
+          .update({ recipe_id: recipeId })
+          .eq('id', existing.id)
+        if (error) throw error
+        setMealPlans(prev =>
+          prev.map(mp => mp.id === existing.id ? { ...mp, recipe_id: recipeId, recipe } : mp)
+        )
+      } else {
+        const { data, error } = await supabase
+          .from('meal_plans')
+          .insert({ user_id: userId, week_start: weekStartStr, day_of_week: dayOfWeek, meal_slot: mealSlot, recipe_id: recipeId })
+          .select('*, recipe:recipes(*)')
+          .single()
+        if (error) throw error
+        setMealPlans(prev => [...prev, data])
+      }
+    } catch {
+      toast.error('Fehler beim Speichern')
+      loadMealPlans()
+    }
+  }
+
   function handleDragStart(event: DragStartEvent) {
     const recipe = event.active.data.current?.recipe as Recipe
     setActiveDragRecipe(recipe ?? null)
@@ -93,69 +131,17 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
     setActiveDragRecipe(null)
     const { active, over } = event
     if (!over) return
-
     const recipe = active.data.current?.recipe as Recipe
     if (!recipe) return
-
     const [dayStr, slot] = (over.id as string).split('-')
-    const dayOfWeek = parseInt(dayStr)
-    const mealSlot = slot as MealSlotType
-    const weekStartStr = formatWeekStart(weekStart)
-
-    // Check if slot already has this exact recipe
-    const existing = mealPlans.find(
-      (mp) =>
-        mp.day_of_week === dayOfWeek &&
-        mp.meal_slot === mealSlot &&
-        mp.week_start === weekStartStr
-    )
-
-    if (existing?.recipe_id === recipe.id) return
-
-    try {
-      if (existing) {
-        // Update existing slot
-        const { error } = await supabase
-          .from('meal_plans')
-          .update({ recipe_id: recipe.id })
-          .eq('id', existing.id)
-
-        if (error) throw error
-
-        setMealPlans((prev) =>
-          prev.map((mp) =>
-            mp.id === existing.id ? { ...mp, recipe_id: recipe.id, recipe } : mp
-          )
-        )
-      } else {
-        // Insert new
-        const { data, error } = await supabase
-          .from('meal_plans')
-          .insert({
-            user_id: userId,
-            week_start: weekStartStr,
-            day_of_week: dayOfWeek,
-            meal_slot: mealSlot,
-            recipe_id: recipe.id,
-          })
-          .select('*, recipe:recipes(*)')
-          .single()
-
-        if (error) throw error
-
-        setMealPlans((prev) => [...prev, data])
-      }
-    } catch {
-      toast.error('Fehler beim Speichern')
-      loadMealPlans()
-    }
+    await handleAssign(parseInt(dayStr), slot as MealSlotType, recipe.id)
   }
 
   async function handleClear(mealPlanId: string) {
     try {
       const { error } = await supabase.from('meal_plans').delete().eq('id', mealPlanId)
       if (error) throw error
-      setMealPlans((prev) => prev.filter((mp) => mp.id !== mealPlanId))
+      setMealPlans(prev => prev.filter(mp => mp.id !== mealPlanId))
     } catch {
       toast.error('Fehler beim Leeren des Slots')
     }
@@ -167,60 +153,66 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
     date: addDays(weekStart, i),
   }))
 
+  const weekLabel = formatWeekLabel(weekStart)
+
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 h-full">
-        <RecipeSidebar recipes={recipes} />
-
-        <div className="flex-1 min-w-0 flex flex-col gap-3">
-          {/* Week navigation */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setWeekStart((w) => addDays(w, -7))}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-sm font-medium text-center">
-              {loading ? (
-                <span className="text-muted-foreground">Laden...</span>
-              ) : (
-                formatWeekLabel(weekStart)
-              )}
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setWeekStart((w) => addDays(w, 7))}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* 7-column grid */}
-          <div className="grid grid-cols-7 gap-2">
-            {days.map(({ index, label, date }) => (
-              <DayColumn
-                key={index}
-                dayIndex={index}
-                dayLabel={label}
-                date={date}
-                mealPlans={mealPlans}
-                onClear={handleClear}
-              />
-            ))}
-          </div>
-        </div>
+    <>
+      {/* Mobile view (< md) */}
+      <div className="md:hidden">
+        <MobilePlanerView
+          days={days}
+          mealPlans={mealPlans}
+          recipes={recipes}
+          weekLabel={weekLabel}
+          loading={loading}
+          onAssign={handleAssign}
+          onClear={handleClear}
+          onPrevWeek={() => setWeekStart(w => addDays(w, -7))}
+          onNextWeek={() => setWeekStart(w => addDays(w, 7))}
+        />
       </div>
 
-      <DragOverlay>
-        {activeDragRecipe && (
-          <div className="bg-background border-2 border-primary rounded-md px-3 py-2 shadow-lg text-sm font-medium pointer-events-none">
-            {activeDragRecipe.name}
+      {/* Desktop view (>= md) */}
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div className="hidden md:flex gap-4 h-full">
+          <RecipeSidebar recipes={recipes} />
+
+          <div className="flex-1 min-w-0 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <Button variant="outline" size="sm" onClick={() => setWeekStart(w => addDays(w, -7))}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <div className="text-sm font-medium text-center">
+                {loading ? <span className="text-muted-foreground">Laden...</span> : weekLabel}
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setWeekStart(w => addDays(w, 7))}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-7 gap-2">
+              {days.map(({ index, label, date }) => (
+                <DayColumn
+                  key={index}
+                  dayIndex={index}
+                  dayLabel={label}
+                  date={date}
+                  mealPlans={mealPlans}
+                  onClear={handleClear}
+                />
+              ))}
+            </div>
           </div>
-        )}
-      </DragOverlay>
-    </DndContext>
+        </div>
+
+        <DragOverlay>
+          {activeDragRecipe && (
+            <div className="bg-background border-2 border-primary rounded-md px-3 py-2 shadow-lg text-sm font-medium pointer-events-none">
+              {activeDragRecipe.name}
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
+    </>
   )
 }
