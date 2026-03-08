@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import RecipeForm from '@/components/rezepte/RecipeForm'
+import AddToShoppingListButton from '../AddToShoppingListButton'
 import { ChevronLeft } from 'lucide-react'
 
 export default async function RezeptBearbeitenPage({
@@ -29,7 +30,12 @@ export default async function RezeptBearbeitenPage({
         <ChevronLeft className="h-4 w-4" />
         Zurück
       </Link>
-      <h1 className="text-xl font-bold mb-4">Rezept bearbeiten</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold">Rezept bearbeiten</h1>
+        {recipe.ingredients?.length > 0 && (
+          <AddToShoppingListButton ingredients={recipe.ingredients} />
+        )}
+      </div>
       <RecipeForm recipe={recipe} />
     </div>
   )
