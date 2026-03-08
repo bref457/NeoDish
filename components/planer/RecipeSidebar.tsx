@@ -24,9 +24,11 @@ function DraggableRecipe({ recipe }: { recipe: Recipe }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 p-2 rounded-md border bg-background hover:bg-accent transition-colors cursor-grab active:cursor-grabbing select-none"
+      {...listeners}
+      {...attributes}
+      className="flex items-center gap-2 p-2 rounded-md border bg-background hover:bg-accent transition-colors cursor-grab active:cursor-grabbing select-none touch-none"
     >
-      <div {...listeners} {...attributes} className="text-muted-foreground shrink-0">
+      <div className="text-muted-foreground shrink-0">
         <GripVertical className="h-4 w-4" />
       </div>
       <div className="flex-1 min-w-0">

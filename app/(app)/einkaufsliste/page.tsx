@@ -43,8 +43,24 @@ type AggregatedIngredient = {
 export default function EinkaufslistePage() {
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [ingredients, setIngredients] = useState<AggregatedIngredient[]>([])
+  const [checked, setChecked] = useState<Record<string, boolean>>({})
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
+
+  const storageKey = `dishboard_checked_${formatWeekStart(weekStart)}`
+
+  useEffect(() => {
+    const saved = localStorage.getItem(storageKey)
+    setChecked(saved ? JSON.parse(saved) : {})
+  }, [storageKey])
+
+  function toggleChecked(key: string) {
+    setChecked((prev) => {
+      const next = { ...prev, [key]: !prev[key] }
+      localStorage.setItem(storageKey, JSON.stringify(next))
+      return next
+    })
+  }
 
   const loadIngredients = useCallback(async () => {
     setLoading(true)
@@ -182,10 +198,17 @@ export default function EinkaufslistePage() {
               key={ing.key}
               className="flex items-center gap-3 py-2 border-b border-dashed border-muted last:border-0"
             >
-              <input type="checkbox" className="h-4 w-4 rounded border-gray-300 print:hidden" />
-              <span className="flex-1 text-sm">{ing.name}</span>
+              <input
+                type="checkbox"
+                checked={!!checked[ing.key]}
+                onChange={() => toggleChecked(ing.key)}
+                className="h-4 w-4 rounded border-gray-300 accent-primary print:hidden shrink-0"
+              />
+              <span className={`flex-1 text-sm transition-colors ${checked[ing.key] ? 'line-through text-muted-foreground' : ''}`}>
+                {ing.name}
+              </span>
               {(ing.quantity != null || ing.unit) && (
-                <Badge variant="outline" className="text-xs shrink-0">
+                <Badge variant="outline" className={`text-xs shrink-0 ${checked[ing.key] ? 'opacity-40' : ''}`}>
                   {ing.quantity != null ? ing.quantity : ''} {ing.unit ?? ''}
                 </Badge>
               )}

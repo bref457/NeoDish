@@ -5,7 +5,7 @@ import { Recipe } from '@/lib/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Clock, Users, Trash2 } from 'lucide-react'
+import { Clock, Users, Trash2, Pencil } from 'lucide-react'
 
 interface RecipeCardProps {
   recipe: Recipe
@@ -22,16 +22,26 @@ export default function RecipeCard({ recipe, onDelete }: RecipeCardProps) {
               {recipe.name}
             </Link>
           </CardTitle>
-          {onDelete && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
-              onClick={() => onDelete(recipe.id)}
+          <div className="flex gap-1 shrink-0">
+            <Link
+              href={`/rezepte/${recipe.id}/bearbeiten`}
+              className="inline-flex items-center justify-center h-7 w-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              title="Bearbeiten"
             >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
+              <Pencil className="h-3.5 w-3.5" />
+            </Link>
+            {onDelete && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                onClick={() => onDelete(recipe.id)}
+                title="Löschen"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
