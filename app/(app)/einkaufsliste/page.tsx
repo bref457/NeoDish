@@ -3,219 +3,170 @@
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ChevronLeft, ChevronRight, Copy, Printer, ShoppingCart } from 'lucide-react'
+import { ShoppingCart, Trash2, CheckCheck } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 
-function getMonday(date: Date): Date {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
-  d.setDate(diff)
-  d.setHours(0, 0, 0, 0)
-  return d
-}
-
-function addDays(date: Date, days: number): Date {
-  const d = new Date(date)
-  d.setDate(d.getDate() + days)
-  return d
-}
-
-function formatWeekStart(date: Date): string {
-  return date.toISOString().split('T')[0]
-}
-
-function formatWeekLabel(monday: Date): string {
-  const sunday = addDays(monday, 6)
-  const fmt = (d: Date) => `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`
-  return `${fmt(monday)} – ${fmt(sunday)}`
-}
-
-type AggregatedIngredient = {
+type ShoppingItem = {
+  id: string
   name: string
   quantity: number | null
   unit: string | null
-  key: string
+  checked: boolean
 }
 
 export default function EinkaufslistePage() {
-  const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
-  const [ingredients, setIngredients] = useState<AggregatedIngredient[]>([])
-  const [checked, setChecked] = useState<Record<string, boolean>>({})
+  const [items, setItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
 
-  const storageKey = `dishboard_checked_${formatWeekStart(weekStart)}`
-
-  useEffect(() => {
-    const saved = localStorage.getItem(storageKey)
-    setChecked(saved ? JSON.parse(saved) : {})
-  }, [storageKey])
-
-  function toggleChecked(key: string) {
-    setChecked((prev) => {
-      const next = { ...prev, [key]: !prev[key] }
-      localStorage.setItem(storageKey, JSON.stringify(next))
-      return next
-    })
-  }
-
-  const loadIngredients = useCallback(async () => {
+  const load = useCallback(async () => {
     setLoading(true)
-    const weekStartStr = formatWeekStart(weekStart)
+    const { data, error } = await supabase
+      .from('shopping_list_items')
+      .select('id, name, quantity, unit, checked')
+      .order('checked')
+      .order('created_at')
 
-    const { data: mealPlans, error } = await supabase
-      .from('meal_plans')
-      .select('recipe_id')
-      .eq('week_start', weekStartStr)
-      .not('recipe_id', 'is', null)
-
-    if (error) {
-      toast.error('Fehler beim Laden')
-      setLoading(false)
-      return
-    }
-
-    const recipeIds = [...new Set(mealPlans?.map((mp) => mp.recipe_id).filter(Boolean))]
-
-    if (recipeIds.length === 0) {
-      setIngredients([])
-      setLoading(false)
-      return
-    }
-
-    const { data: ings, error: ingError } = await supabase
-      .from('ingredients')
-      .select('name, quantity, unit')
-      .in('recipe_id', recipeIds)
-
-    if (ingError) {
-      toast.error('Fehler beim Laden der Zutaten')
-      setLoading(false)
-      return
-    }
-
-    // Aggregate: same name + same unit → sum quantities
-    const map = new Map<string, AggregatedIngredient>()
-    for (const ing of ings ?? []) {
-      const key = `${ing.name.toLowerCase()}__${(ing.unit ?? '').toLowerCase()}`
-      const existing = map.get(key)
-      if (existing) {
-        existing.quantity =
-          existing.quantity != null && ing.quantity != null
-            ? existing.quantity + ing.quantity
-            : existing.quantity ?? ing.quantity
-      } else {
-        map.set(key, {
-          name: ing.name,
-          quantity: ing.quantity,
-          unit: ing.unit,
-          key,
-        })
-      }
-    }
-
-    setIngredients([...map.values()].sort((a, b) => a.name.localeCompare(b.name)))
+    if (error) toast.error('Fehler beim Laden')
+    else setItems(data ?? [])
     setLoading(false)
-  }, [weekStart, supabase])
+  }, [supabase])
 
-  useEffect(() => {
-    loadIngredients()
-  }, [loadIngredients])
+  useEffect(() => { load() }, [load])
 
-  function formatIngredient(ing: AggregatedIngredient): string {
-    const qty = ing.quantity != null ? ing.quantity : ''
-    const unit = ing.unit ?? ''
-    const amount = [qty, unit].filter(Boolean).join(' ')
-    return amount ? `${amount} ${ing.name}` : ing.name
+  async function toggleItem(item: ShoppingItem) {
+    const { error } = await supabase
+      .from('shopping_list_items')
+      .update({ checked: !item.checked })
+      .eq('id', item.id)
+
+    if (error) { toast.error('Fehler'); return }
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, checked: !i.checked } : i))
   }
 
-  function handleCopy() {
-    const text = ingredients.map(formatIngredient).join('\n')
-    navigator.clipboard.writeText(text)
-    toast.success('In Zwischenablage kopiert')
+  async function deleteItem(id: string) {
+    const { error } = await supabase.from('shopping_list_items').delete().eq('id', id)
+    if (error) { toast.error('Fehler'); return }
+    setItems(prev => prev.filter(i => i.id !== id))
   }
 
-  function handlePrint() {
-    window.print()
+  async function deleteChecked() {
+    const checkedIds = items.filter(i => i.checked).map(i => i.id)
+    if (checkedIds.length === 0) return
+    const { error } = await supabase.from('shopping_list_items').delete().in('id', checkedIds)
+    if (error) { toast.error('Fehler'); return }
+    setItems(prev => prev.filter(i => !i.checked))
+    toast.success('Erledigte Artikel gelöscht')
   }
+
+  async function deleteAll() {
+    if (!confirm('Gesamte Einkaufsliste löschen?')) return
+    const { error } = await supabase.from('shopping_list_items').delete().neq('id', '00000000-0000-0000-0000-000000000000')
+    if (error) { toast.error('Fehler'); return }
+    setItems([])
+    toast.success('Liste geleert')
+  }
+
+  const unchecked = items.filter(i => !i.checked)
+  const checked = items.filter(i => i.checked)
 
   return (
     <div className="max-w-xl mx-auto p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">Einkaufsliste</h1>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
-            <Copy className="h-4 w-4" />
-            Kopieren
-          </Button>
-          <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5">
-            <Printer className="h-4 w-4" />
-            Drucken
-          </Button>
+          {checked.length > 0 && (
+            <Button variant="outline" size="sm" onClick={deleteChecked} className="gap-1.5 text-muted-foreground">
+              <CheckCheck className="h-4 w-4" />
+              <span className="hidden sm:inline">Erledigte löschen</span>
+            </Button>
+          )}
+          {items.length > 0 && (
+            <Button variant="outline" size="sm" onClick={deleteAll} className="gap-1.5 text-destructive hover:text-destructive">
+              <Trash2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Alle löschen</span>
+            </Button>
+          )}
         </div>
-      </div>
-
-      {/* Week navigation */}
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setWeekStart((w) => addDays(w, -7))}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <div className="text-sm font-medium">{formatWeekLabel(weekStart)}</div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setWeekStart((w) => addDays(w, 7))}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
 
       <Separator className="mb-4" />
 
       {loading ? (
         <div className="text-center text-muted-foreground py-12">Laden...</div>
-      ) : ingredients.length === 0 ? (
-        <div className="text-center text-muted-foreground py-12 flex flex-col items-center gap-2">
-          <ShoppingCart className="h-8 w-8 opacity-30" />
-          <p>Keine Rezepte für diese Woche geplant.</p>
+      ) : items.length === 0 ? (
+        <div className="text-center text-muted-foreground py-16 flex flex-col items-center gap-3">
+          <ShoppingCart className="h-10 w-10 opacity-25" />
+          <p className="font-medium">Einkaufsliste ist leer</p>
+          <p className="text-sm">
+            Öffne ein Rezept und tippe auf{' '}
+            <span className="font-medium text-foreground">„Zur Einkaufsliste"</span>
+          </p>
         </div>
       ) : (
-        <div className="space-y-1">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-muted-foreground">
-              {ingredients.length} Zutat{ingredients.length !== 1 ? 'en' : ''}
-            </span>
-          </div>
-          {ingredients.map((ing) => (
-            <div
-              key={ing.key}
-              className="flex items-center gap-3 py-2 border-b border-dashed border-muted last:border-0"
-            >
-              <input
-                type="checkbox"
-                checked={!!checked[ing.key]}
-                onChange={() => toggleChecked(ing.key)}
-                className="h-4 w-4 rounded border-gray-300 accent-primary print:hidden shrink-0"
-              />
-              <span className={`flex-1 text-sm transition-colors ${checked[ing.key] ? 'line-through text-muted-foreground' : ''}`}>
-                {ing.name}
-              </span>
-              {(ing.quantity != null || ing.unit) && (
-                <Badge variant="outline" className={`text-xs shrink-0 ${checked[ing.key] ? 'opacity-40' : ''}`}>
-                  {ing.quantity != null ? ing.quantity : ''} {ing.unit ?? ''}
-                </Badge>
-              )}
-            </div>
+        <div className="space-y-0.5">
+          {unchecked.length > 0 && (
+            <p className="text-xs text-muted-foreground mb-2">
+              {unchecked.length} Artikel noch zu kaufen
+            </p>
+          )}
+
+          {unchecked.map(item => (
+            <ItemRow key={item.id} item={item} onToggle={toggleItem} onDelete={deleteItem} />
           ))}
+
+          {checked.length > 0 && unchecked.length > 0 && (
+            <Separator className="my-3" />
+          )}
+
+          {checked.length > 0 && (
+            <>
+              <p className="text-xs text-muted-foreground mb-2 pt-1">{checked.length} erledigt</p>
+              {checked.map(item => (
+                <ItemRow key={item.id} item={item} onToggle={toggleItem} onDelete={deleteItem} />
+              ))}
+            </>
+          )}
         </div>
       )}
+    </div>
+  )
+}
+
+function ItemRow({
+  item,
+  onToggle,
+  onDelete,
+}: {
+  item: ShoppingItem
+  onToggle: (item: ShoppingItem) => void
+  onDelete: (id: string) => void
+}) {
+  return (
+    <div className="flex items-center gap-3 py-2.5 border-b border-muted/50 last:border-0 group">
+      <input
+        type="checkbox"
+        checked={item.checked}
+        onChange={() => onToggle(item)}
+        className="h-4 w-4 rounded shrink-0 accent-primary cursor-pointer"
+      />
+      <span className={`flex-1 text-sm ${item.checked ? 'line-through text-muted-foreground' : ''}`}>
+        {item.name}
+      </span>
+      {(item.quantity != null || item.unit) && (
+        <Badge variant="outline" className={`text-xs shrink-0 ${item.checked ? 'opacity-40' : ''}`}>
+          {item.quantity != null ? item.quantity : ''}{item.unit ? ` ${item.unit}` : ''}
+        </Badge>
+      )}
+      <button
+        onClick={() => onDelete(item.id)}
+        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive ml-1"
+        title="Entfernen"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
     </div>
   )
 }

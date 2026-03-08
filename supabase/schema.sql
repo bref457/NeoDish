@@ -66,3 +66,21 @@ CREATE POLICY "meal_plans_select" ON meal_plans FOR SELECT USING (auth.uid() = u
 CREATE POLICY "meal_plans_insert" ON meal_plans FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "meal_plans_update" ON meal_plans FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "meal_plans_delete" ON meal_plans FOR DELETE USING (auth.uid() = user_id);
+
+-- shopping_list_items
+CREATE TABLE IF NOT EXISTS shopping_list_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  name TEXT NOT NULL,
+  quantity NUMERIC,
+  unit TEXT,
+  checked BOOLEAN DEFAULT FALSE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+ALTER TABLE shopping_list_items ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users manage own shopping list"
+  ON shopping_list_items FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);

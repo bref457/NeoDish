@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Clock, Users, ChevronLeft, Pencil } from 'lucide-react'
 import DeleteRecipeButton from './DeleteRecipeButton'
+import AddToShoppingListButton from './AddToShoppingListButton'
 
 export default async function RezeptDetailPage({
   params,
@@ -34,7 +35,10 @@ export default async function RezeptDetailPage({
 
       <div className="flex items-start justify-between gap-4 mb-4">
         <h1 className="text-2xl font-bold">{recipe.name}</h1>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex gap-2 shrink-0 flex-wrap">
+          {recipe.ingredients?.length > 0 && (
+            <AddToShoppingListButton ingredients={recipe.ingredients} />
+          )}
           <Link
             href={`/rezepte/${id}/bearbeiten`}
             className="inline-flex items-center gap-1.5 h-7 px-2.5 text-[0.8rem] font-medium rounded-[min(var(--radius-md),12px)] border border-border bg-background hover:bg-muted transition-colors"
