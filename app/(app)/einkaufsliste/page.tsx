@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import ConfirmDialog from '@/components/ui/confirm-dialog'
 import { ShoppingCart, Trash2, CheckCheck, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -65,6 +66,7 @@ export default function EinkaufslistePage() {
   const [weekStart, setWeekStart] = useState(() => getMonday(new Date()))
   const [items, setItems] = useState<ShoppingItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [confirmDeleteAll, setConfirmDeleteAll] = useState(false)
   const supabase = createClient()
 
   const weekStartStr = formatWeekStart(weekStart)
@@ -111,10 +113,10 @@ export default function EinkaufslistePage() {
   }
 
   async function deleteAll() {
-    if (!confirm('Alle Artikel dieser Woche löschen?')) return
     const { error } = await supabase.from('shopping_list_items').delete().eq('week_start', weekStartStr)
     if (error) { toast.error('Fehler'); return }
     setItems([])
+    setConfirmDeleteAll(false)
     toast.success('Liste geleert')
   }
 
@@ -139,7 +141,7 @@ export default function EinkaufslistePage() {
             </Button>
           )}
           {items.length > 0 && (
-            <Button variant="outline" size="sm" onClick={deleteAll} className="gap-1.5 text-destructive hover:text-destructive">
+            <Button variant="outline" size="sm" onClick={() => setConfirmDeleteAll(true)} className="gap-1.5 text-destructive hover:text-destructive">
               <Trash2 className="h-4 w-4" />
               <span className="hidden sm:inline">Alle löschen</span>
             </Button>
@@ -212,6 +214,14 @@ export default function EinkaufslistePage() {
           )}
         </div>
       )}
+      <ConfirmDialog
+        open={confirmDeleteAll}
+        onOpenChange={setConfirmDeleteAll}
+        title="Alle Artikel löschen?"
+        description="Alle Artikel dieser Woche werden unwiderruflich gelöscht."
+        confirmLabel="Alle löschen"
+        onConfirm={deleteAll}
+      />
     </div>
   )
 }

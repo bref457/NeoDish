@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Recipe } from '@/lib/types'
 import RecipeCard from '@/components/rezepte/RecipeCard'
+import ConfirmDialog from '@/components/ui/confirm-dialog'
 import { Input } from '@/components/ui/input'
 import { Plus, Search } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,6 +14,8 @@ export default function RezeptePage() {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(true)
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -34,16 +37,18 @@ export default function RezeptePage() {
     setLoading(false)
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('Rezept wirklich löschen?')) return
-
-    const { error } = await supabase.from('recipes').delete().eq('id', id)
+  async function handleDelete() {
+    if (!deleteId) return
+    setDeleting(true)
+    const { error } = await supabase.from('recipes').delete().eq('id', deleteId)
     if (error) {
       toast.error('Fehler beim Löschen')
     } else {
-      setRecipes((prev) => prev.filter((r) => r.id !== id))
+      setRecipes((prev) => prev.filter((r) => r.id !== deleteId))
       toast.success('Rezept gelöscht')
     }
+    setDeleting(false)
+    setDeleteId(null)
   }
 
   const filtered = recipes.filter((r) =>
@@ -81,10 +86,20 @@ export default function RezeptePage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filtered.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} onDelete={handleDelete} />
+            <RecipeCard key={recipe.id} recipe={recipe} onDelete={setDeleteId} />
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteId}
+        onOpenChange={(o) => !o && setDeleteId(null)}
+        title="Rezept löschen?"
+        description="Das Rezept wird unwiderruflich gelöscht."
+        confirmLabel="Löschen"
+        onConfirm={handleDelete}
+        loading={deleting}
+      />
     </div>
   )
 }
