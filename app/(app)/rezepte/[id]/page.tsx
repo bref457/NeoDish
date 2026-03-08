@@ -37,7 +37,7 @@ export default async function RezeptDetailPage({
         <h1 className="text-2xl font-bold">{recipe.name}</h1>
         <div className="flex gap-2 shrink-0 flex-wrap">
           {recipe.ingredients?.length > 0 && (
-            <AddToShoppingListButton ingredients={recipe.ingredients} />
+            <AddToShoppingListButton ingredients={recipe.ingredients} recipeName={recipe.name} />
           )}
           <Link
             href={`/rezepte/${id}/bearbeiten`}

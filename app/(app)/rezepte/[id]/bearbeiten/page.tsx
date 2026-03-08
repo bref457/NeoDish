@@ -33,7 +33,7 @@ export default async function RezeptBearbeitenPage({
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">Rezept bearbeiten</h1>
         {recipe.ingredients?.length > 0 && (
-          <AddToShoppingListButton ingredients={recipe.ingredients} />
+          <AddToShoppingListButton ingredients={recipe.ingredients} recipeName={recipe.name} />
         )}
       </div>
       <RecipeForm recipe={recipe} />

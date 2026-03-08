@@ -12,7 +12,22 @@ type Ingredient = {
   unit: string | null
 }
 
-export default function AddToShoppingListButton({ ingredients }: { ingredients: Ingredient[] }) {
+function getMonday(date: Date): string {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1)
+  d.setDate(diff)
+  d.setHours(0, 0, 0, 0)
+  return d.toISOString().split('T')[0]
+}
+
+export default function AddToShoppingListButton({
+  ingredients,
+  recipeName,
+}: {
+  ingredients: Ingredient[]
+  recipeName: string
+}) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const supabase = createClient()
@@ -24,12 +39,16 @@ export default function AddToShoppingListButton({ ingredients }: { ingredients: 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { toast.error('Nicht angemeldet'); setLoading(false); return }
 
+    const weekStart = getMonday(new Date())
+
     const rows = ingredients.map(ing => ({
       user_id: user.id,
       name: ing.name,
       quantity: ing.quantity,
       unit: ing.unit,
       checked: false,
+      week_start: weekStart,
+      recipe_name: recipeName,
     }))
 
     const { error } = await supabase.from('shopping_list_items').insert(rows)
