@@ -22,7 +22,7 @@ export default function MealSlot({ dayIndex, slot, mealPlan, onClear }: MealSlot
     <div
       ref={setNodeRef}
       className={cn(
-        'min-h-[60px] rounded-md border-2 border-dashed p-1.5 transition-colors relative text-xs',
+        'min-h-[90px] rounded-lg border-2 border-dashed p-2.5 transition-colors relative text-sm',
         isOver
           ? 'border-primary bg-primary/10'
           : recipe
@@ -46,7 +46,7 @@ export default function MealSlot({ dayIndex, slot, mealPlan, onClear }: MealSlot
           )}
         </div>
       ) : (
-        <span className="text-muted-foreground/50 text-[10px]">Rezept hierher ziehen</span>
+        <span className="text-muted-foreground/40 text-xs">Rezept hierher ziehen</span>
       )}
     </div>
   )

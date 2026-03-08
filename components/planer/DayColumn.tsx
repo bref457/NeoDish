@@ -22,7 +22,7 @@ export default function DayColumn({
   return (
     <div className="min-w-0">
       <div
-        className={`text-center py-1 mb-2 rounded-md text-sm font-semibold ${
+        className={`text-center py-2 mb-3 rounded-lg text-sm font-semibold ${
           isToday ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
         }`}
       >
@@ -34,7 +34,7 @@ export default function DayColumn({
       <div className="space-y-2">
         {MEAL_SLOTS.map((slot: MealSlotType) => (
           <div key={slot}>
-            <div className="text-[10px] text-muted-foreground mb-0.5 px-0.5">
+            <div className="text-xs font-medium text-muted-foreground mb-1 px-0.5">
               {MEAL_SLOT_LABELS[slot]}
             </div>
             <MealSlot
