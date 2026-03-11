@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ChefHat, CalendarDays, BookOpen, ShoppingCart } from 'lucide-react'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const features = [
   { icon: CalendarDays, text: 'Wochenplanung auf einen Blick' },
@@ -86,7 +87,10 @@ export default function LoginPage() {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-background">
+      <div className="flex-1 flex items-center justify-center p-6 bg-background relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="flex items-center gap-2 justify-center mb-8 lg:hidden">

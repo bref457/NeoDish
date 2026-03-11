@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { ChefHat, CalendarDays, BookOpen, ShoppingCart, ArrowRight } from 'lucide-react'
+import { ChefHat, CalendarDays, BookOpen, ShoppingCart, ArrowRight, Sparkles, Users } from 'lucide-react'
 import ThemeToggle from '@/components/ThemeToggle'
 
 const features = [
@@ -163,6 +163,44 @@ export default async function Home() {
               <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Coming Soon */}
+      <section className="max-w-6xl mx-auto px-6 pb-24">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold mb-3">Was als nächstes kommt</h2>
+          <p className="text-muted-foreground">Wir arbeiten ständig an neuen Features</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Card 1 – KI-Rezeptvorschlag */}
+          <div className="p-6 rounded-2xl border border-dashed border-border bg-card/50 relative overflow-hidden opacity-90">
+            <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full mb-4">
+              <Sparkles className="h-3 w-3" />
+              Bald verfügbar
+            </span>
+            <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit mb-4">
+              <Sparkles className="h-5 w-5" />
+            </div>
+            <h3 className="font-semibold text-lg mb-2">KI-Rezeptvorschläge</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Lass dir von der KI Rezepte vorschlagen – basierend auf deinen Vorlieben, der Saison und dem was du zuhause hast.
+            </p>
+          </div>
+          {/* Card 2 – Rezepte teilen */}
+          <div className="p-6 rounded-2xl border border-dashed border-border bg-card/50 relative overflow-hidden opacity-90">
+            <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-medium px-2.5 py-1 rounded-full mb-4">
+              <Sparkles className="h-3 w-3" />
+              Bald verfügbar
+            </span>
+            <div className="p-3 rounded-xl bg-primary/10 text-primary w-fit mb-4">
+              <Users className="h-5 w-5" />
+            </div>
+            <h3 className="font-semibold text-lg mb-2">Rezepte teilen</h3>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Teile deine Lieblingsrezepte mit der Community oder sende sie direkt an Freunde – damit deine Küche andere inspirieren kann.
+            </p>
+          </div>
         </div>
       </section>
 
