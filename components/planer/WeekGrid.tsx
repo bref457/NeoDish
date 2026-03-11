@@ -12,8 +12,8 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { createClient } from '@/lib/supabase/client'
-import { MealPlan, MealSlotType, Recipe, DAY_LABELS } from '@/lib/types'
-import DayColumn from './DayColumn'
+import { MealPlan, MealSlotType, Recipe, DAY_LABELS, MEAL_SLOTS, MEAL_SLOT_LABELS } from '@/lib/types'
+import MealSlot from './MealSlot'
 import RecipeSidebar from './RecipeSidebar'
 import MobilePlanerView from './MobilePlanerView'
 import { Button } from '@/components/ui/button'
@@ -190,16 +190,45 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
               </Button>
             </div>
 
-            <div className="grid grid-cols-7 gap-2">
-              {days.map(({ index, label, date }) => (
-                <DayColumn
-                  key={index}
-                  dayIndex={index}
-                  dayLabel={label}
-                  date={date}
-                  mealPlans={mealPlans}
-                  onClear={handleClear}
-                />
+            <div className="grid gap-2" style={{ gridTemplateColumns: 'auto repeat(7, 1fr)' }}>
+              {/* Header row */}
+              <div />
+              {days.map(({ index, label, date }) => {
+                const isToday = date.toDateString() === new Date().toDateString()
+                return (
+                  <div
+                    key={index}
+                    className={`text-center py-2 rounded-lg text-sm font-semibold ${
+                      isToday ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    <div>{label}</div>
+                    <div className="text-xs font-normal opacity-80">
+                      {date.getDate()}.{date.getMonth() + 1}.
+                    </div>
+                  </div>
+                )
+              })}
+              {/* Meal rows */}
+              {MEAL_SLOTS.map((slot: MealSlotType) => (
+                <>
+                  <div key={`label-${slot}`} className="flex items-center pr-2">
+                    <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">
+                      {MEAL_SLOT_LABELS[slot]}
+                    </span>
+                  </div>
+                  {days.map(({ index }) => (
+                    <MealSlot
+                      key={`${slot}-${index}`}
+                      dayIndex={index}
+                      slot={slot}
+                      mealPlan={mealPlans.find(
+                        (mp) => mp.day_of_week === index && mp.meal_slot === slot
+                      )}
+                      onClear={handleClear}
+                    />
+                  ))}
+                </>
               ))}
             </div>
           </div>
