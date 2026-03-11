@@ -45,10 +45,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel */}
-      <div
-        className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: 'oklch(0.16 0.025 45)', color: 'oklch(0.93 0.01 60)' }}
-      >
+      <div className="auth-panel-left hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full blur-3xl" style={{ background: 'oklch(0.58 0.13 38 / 0.12)' }} />
           <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full blur-3xl" style={{ background: 'oklch(0.52 0.09 130 / 0.08)' }} />

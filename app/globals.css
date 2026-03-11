@@ -130,6 +130,18 @@
   }
 }
 
+/* Auth split-screen left panel */
+.auth-panel-left {
+  background: oklch(0.16 0.025 45);
+  color: oklch(0.93 0.01 60);
+}
+
+@media (prefers-color-scheme: dark) {
+  .auth-panel-left {
+    background: oklch(0.24 0.022 45);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

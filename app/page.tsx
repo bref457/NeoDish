@@ -167,8 +167,7 @@ export default async function Home() {
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
         <div
-          className="rounded-2xl p-12 text-center relative overflow-hidden"
-          style={{ background: 'oklch(0.16 0.025 45)', color: 'oklch(0.93 0.01 60)' }}
+          className="auth-panel-left rounded-2xl p-12 text-center relative overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full blur-3xl" style={{ background: 'oklch(0.58 0.13 38 / 0.15)' }} />
