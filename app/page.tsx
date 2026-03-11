@@ -166,18 +166,22 @@ export default async function Home() {
 
       {/* CTA */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
-        <div className="rounded-2xl bg-primary text-primary-foreground p-12 text-center relative overflow-hidden">
+        <div
+          className="rounded-2xl p-12 text-center relative overflow-hidden"
+          style={{ background: 'oklch(0.16 0.025 45)', color: 'oklch(0.93 0.01 60)' }}
+        >
           <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/10 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-white/5 blur-3xl" />
+            <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full blur-3xl" style={{ background: 'oklch(0.58 0.13 38 / 0.15)' }} />
+            <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl" style={{ background: 'oklch(0.52 0.09 130 / 0.08)' }} />
           </div>
           <h2 className="text-3xl font-bold mb-3 relative">Bereit loszulegen?</h2>
-          <p className="text-primary-foreground/70 mb-8 relative">
+          <p className="mb-8 relative" style={{ color: 'oklch(0.93 0.01 60 / 0.55)' }}>
             Kostenlos registrieren und sofort mit der Wochenplanung starten.
           </p>
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 bg-white text-primary px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity relative"
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity relative"
+            style={{ background: 'oklch(0.78 0.10 38)', color: 'oklch(0.16 0.025 45)' }}
           >
             Jetzt starten
             <ArrowRight className="h-4 w-4" />

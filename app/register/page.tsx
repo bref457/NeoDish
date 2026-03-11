@@ -47,15 +47,18 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 bg-primary text-primary-foreground relative overflow-hidden">
+      <div
+        className="hidden lg:flex lg:w-[45%] flex-col justify-between p-12 relative overflow-hidden"
+        style={{ background: 'oklch(0.16 0.025 45)', color: 'oklch(0.93 0.01 60)' }}
+      >
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-10 -left-10 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
+          <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full blur-3xl" style={{ background: 'oklch(0.58 0.13 38 / 0.12)' }} />
+          <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full blur-3xl" style={{ background: 'oklch(0.52 0.09 130 / 0.08)' }} />
         </div>
 
         <div className="flex items-center gap-3 relative">
-          <div className="p-2.5 rounded-xl bg-white/20">
-            <ChefHat className="h-6 w-6" />
+          <div className="p-2.5 rounded-xl" style={{ background: 'oklch(0.58 0.13 38 / 0.25)' }}>
+            <ChefHat className="h-6 w-6" style={{ color: 'oklch(0.78 0.10 38)' }} />
           </div>
           <span className="text-xl font-semibold tracking-tight">Dishboard</span>
         </div>
@@ -65,7 +68,7 @@ export default function RegisterPage() {
             <h1 className="text-4xl font-bold leading-tight mb-3">
               Starte deinen persönlichen Essenswochenplaner
             </h1>
-            <p className="text-primary-foreground/70 text-lg leading-relaxed">
+            <p className="text-lg leading-relaxed" style={{ color: 'oklch(0.93 0.01 60 / 0.55)' }}>
               Erstelle dein Konto und fang sofort an, deine Woche zu planen.
             </p>
           </div>
@@ -73,16 +76,16 @@ export default function RegisterPage() {
           <div className="space-y-3">
             {features.map(({ icon: Icon, text }) => (
               <div key={text} className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-white/15 shrink-0">
-                  <Icon className="h-4 w-4" />
+                <div className="p-2 rounded-lg shrink-0" style={{ background: 'oklch(1 0 0 / 0.07)' }}>
+                  <Icon className="h-4 w-4" style={{ color: 'oklch(0.78 0.10 38)' }} />
                 </div>
-                <span className="text-primary-foreground/85 text-sm font-medium">{text}</span>
+                <span className="text-sm font-medium" style={{ color: 'oklch(0.93 0.01 60 / 0.8)' }}>{text}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <p className="text-primary-foreground/40 text-xs relative">
+        <p className="text-xs relative" style={{ color: 'oklch(0.93 0.01 60 / 0.3)' }}>
           © {new Date().getFullYear()} Dishboard
         </p>
       </div>
