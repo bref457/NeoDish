@@ -28,14 +28,11 @@ export default function Navigation() {
     <>
       {/* Top bar — logo + desktop nav + logout */}
       <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-4">
+        <div className="px-6 h-16 flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2 font-semibold text-primary shrink-0">
             <ChefHat className="h-5 w-5" />
             <span>Dishboard</span>
-            <span className="hidden lg:inline text-muted-foreground font-normal text-xs">
-              – der Essenswochenplaner
-            </span>
           </div>
 
           {/* Desktop nav links */}
