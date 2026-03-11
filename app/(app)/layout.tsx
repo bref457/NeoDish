@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen flex flex-col">
       <Navigation />
       {/* pb-20 reserves space for the mobile bottom tab bar */}
-      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+      <main className="flex-1 pb-20 md:pb-0 md:flex md:flex-col md:min-h-0">{children}</main>
     </div>
   )
 }

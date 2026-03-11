@@ -22,7 +22,7 @@ export default function MealSlot({ dayIndex, slot, mealPlan, onClear }: MealSlot
     <div
       ref={setNodeRef}
       className={cn(
-        'min-h-[110px] rounded-lg border-2 border-dashed p-3 transition-colors relative text-sm',
+        'h-full rounded-lg border-2 border-dashed p-3 transition-colors relative text-sm',
         isOver
           ? 'border-primary bg-primary/10'
           : recipe

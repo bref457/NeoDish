@@ -174,7 +174,7 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
 
       {/* Desktop view (>= md) */}
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="hidden md:flex gap-6 h-full">
+        <div className="hidden md:flex gap-6 flex-1 min-h-0">
           <RecipeSidebar recipes={recipes} />
 
           <div className="flex-1 min-w-0 flex flex-col gap-4">
@@ -190,7 +190,7 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
               </Button>
             </div>
 
-            <div className="grid gap-3" style={{ gridTemplateColumns: 'auto repeat(7, 1fr)' }}>
+            <div className="grid gap-3 flex-1 min-h-0" style={{ gridTemplateColumns: 'auto repeat(7, 1fr)', gridTemplateRows: 'auto repeat(3, 1fr)' }}>
               {/* Header row */}
               <div />
               {days.map(({ index, label, date }) => {
