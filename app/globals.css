@@ -2,8 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* System-responsive dark mode via OS preference */
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* Class-based dark mode for next-themes */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -94,8 +94,7 @@
   --sidebar-ring: oklch(0.58 0.13 38);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+.dark {
     --terra: oklch(0.68 0.13 38);
     --olive: oklch(0.62 0.09 130);
     --aubergine: oklch(0.58 0.10 310);
@@ -127,7 +126,6 @@
     --sidebar-accent-foreground: oklch(0.90 0.01 60);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.68 0.13 38);
-  }
 }
 
 /* Auth split-screen left panel */
@@ -136,10 +134,8 @@
   color: oklch(0.93 0.01 60);
 }
 
-@media (prefers-color-scheme: dark) {
-  .auth-panel-left {
-    background: oklch(0.24 0.022 45);
-  }
+.dark .auth-panel-left {
+  background: oklch(0.24 0.022 45);
 }
 
 @layer base {

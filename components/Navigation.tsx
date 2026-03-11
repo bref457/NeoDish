@@ -2,9 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import { CalendarDays, BookOpen, ShoppingCart, LogOut, ChefHat } from 'lucide-react'
+import { CalendarDays, BookOpen, ShoppingCart, LogOut, ChefHat, Sun, Moon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -16,6 +17,7 @@ const navItems = [
 export default function Navigation() {
   const pathname = usePathname()
   const router = useRouter()
+  const { resolvedTheme, setTheme } = useTheme()
 
   async function handleLogout() {
     const supabase = createClient()
@@ -58,6 +60,16 @@ export default function Navigation() {
           </div>
 
           <div className="flex-1 md:flex-none" />
+
+          {/* Theme toggle */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            className="text-muted-foreground hover:text-foreground shrink-0"
+          >
+            {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
 
           {/* Logout */}
           <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5 text-muted-foreground hover:text-foreground">

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { ThemeProvider } from 'next-themes'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -26,8 +27,10 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${geist.variable} ${geistMono.variable} antialiased`} style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}>
-        {children}
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )
