@@ -45,10 +45,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/planer', request.url))
   }
 
-  if (pathname === '/') {
-    return NextResponse.redirect(
-      new URL(user ? '/planer' : '/login', request.url)
-    )
+  if (pathname === '/' && user) {
+    return NextResponse.redirect(new URL('/planer', request.url))
   }
 
   return supabaseResponse
