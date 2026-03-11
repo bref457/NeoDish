@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ChefHat, CalendarDays, BookOpen, ShoppingCart, ArrowRight } from 'lucide-react'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const features = [
   {
@@ -47,7 +48,8 @@ export default async function Home() {
           </div>
           <span className="font-semibold text-lg tracking-tight">Dishboard</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <ThemeToggle className="text-muted-foreground hover:text-foreground" />
           <Link
             href="/login"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5"
