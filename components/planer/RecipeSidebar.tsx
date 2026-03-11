@@ -56,7 +56,7 @@ export default function RecipeSidebar({ recipes }: RecipeSidebarProps) {
   )
 
   return (
-    <div className="w-56 shrink-0 flex flex-col gap-3 border rounded-lg p-3 bg-muted/30">
+    <div className="w-64 shrink-0 flex flex-col gap-4 border rounded-xl p-4 bg-muted/30">
       <div className="font-semibold text-sm">Rezepte</div>
       <div className="relative">
         <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />

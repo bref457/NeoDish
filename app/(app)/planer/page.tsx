@@ -13,8 +13,8 @@ export default async function PlanerPage() {
     .order('name')
 
   return (
-    <div className="max-w-7xl mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">Wochenplaner</h1>
+    <div className="px-6 py-6">
+      <h1 className="text-2xl font-bold mb-6">Wochenplaner</h1>
       <WeekGrid
         initialRecipes={recipes ?? []}
         userId={user!.id}

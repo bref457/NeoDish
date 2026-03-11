@@ -174,10 +174,10 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
 
       {/* Desktop view (>= md) */}
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-        <div className="hidden md:flex gap-4 h-full">
+        <div className="hidden md:flex gap-6 h-full">
           <RecipeSidebar recipes={recipes} />
 
-          <div className="flex-1 min-w-0 flex flex-col gap-3">
+          <div className="flex-1 min-w-0 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <Button variant="outline" size="sm" onClick={() => setWeekStart(w => addDays(w, -7))}>
                 <ChevronLeft className="h-4 w-4" />
@@ -190,7 +190,7 @@ export default function WeekGrid({ initialRecipes, userId }: WeekGridProps) {
               </Button>
             </div>
 
-            <div className="grid gap-2" style={{ gridTemplateColumns: 'auto repeat(7, 1fr)' }}>
+            <div className="grid gap-3" style={{ gridTemplateColumns: 'auto repeat(7, 1fr)' }}>
               {/* Header row */}
               <div />
               {days.map(({ index, label, date }) => {
