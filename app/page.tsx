@@ -46,7 +46,7 @@ export default async function Home() {
           <div className="p-2 rounded-xl bg-primary/10 text-primary">
             <ChefHat className="h-5 w-5" />
           </div>
-          <span className="font-semibold text-lg tracking-tight">Dishboard</span>
+          <span className="font-semibold text-lg tracking-tight">NeoDish</span>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle className="text-muted-foreground hover:text-foreground" />
@@ -69,7 +69,7 @@ export default async function Home() {
       <section className="max-w-6xl mx-auto px-6 pt-16 pb-20 text-center">
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-medium px-3 py-1.5 rounded-full mb-6">
           <ChefHat className="h-3.5 w-3.5" />
-          Dein persönlicher Essenswochenplaner
+          Dein persönlicher Wochenplaner für Mahlzeiten
         </div>
         <h1 className="text-5xl sm:text-6xl font-bold leading-tight tracking-tight mb-6 max-w-3xl mx-auto">
           Essen planen,{' '}
@@ -230,7 +230,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Dishboard
+        © {new Date().getFullYear()} NeoDish
       </footer>
     </div>
   )

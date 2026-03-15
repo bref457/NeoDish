@@ -48,7 +48,7 @@ export default function LoginPage() {
             <div className="p-2 rounded-xl bg-primary/10 text-primary">
               <ChefHat className="h-6 w-6" />
             </div>
-            <span className="text-xl font-semibold">Dishboard</span>
+            <span className="text-xl font-semibold">NeoDish</span>
           </div>
 
           <div className="mb-8">

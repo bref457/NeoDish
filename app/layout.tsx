@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Dishboard',
-  description: 'Dein persönlicher Essenswochenplaner',
+  title: 'NeoDish',
+  description: 'Dein persönlicher Wochenplaner für Mahlzeiten',
 }
 
 export default function RootLayout({
