@@ -129,20 +129,20 @@ export default function EinkaufslistePage() {
     RECIPE_COLORS[recipeNames.indexOf(name ?? '—') % RECIPE_COLORS.length]
 
   return (
-    <div className="max-w-xl mx-auto p-4">
+    <div className="max-w-2xl mx-auto p-4">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">Einkaufsliste</h1>
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-2xl font-bold">Einkaufsliste</h1>
         <div className="flex gap-2">
           {checked.length > 0 && (
-            <Button variant="outline" size="sm" onClick={deleteChecked} className="gap-1.5 text-muted-foreground">
-              <CheckCheck className="h-4 w-4" />
+            <Button variant="outline" onClick={deleteChecked} className="gap-2 text-muted-foreground">
+              <CheckCheck className="h-5 w-5" />
               <span className="hidden sm:inline">Erledigte löschen</span>
             </Button>
           )}
           {items.length > 0 && (
-            <Button variant="outline" size="sm" onClick={() => setConfirmDeleteAll(true)} className="gap-1.5 text-destructive hover:text-destructive">
-              <Trash2 className="h-4 w-4" />
+            <Button variant="outline" onClick={() => setConfirmDeleteAll(true)} className="gap-2 text-destructive hover:text-destructive">
+              <Trash2 className="h-5 w-5" />
               <span className="hidden sm:inline">Alle löschen</span>
             </Button>
           )}
@@ -150,18 +150,18 @@ export default function EinkaufslistePage() {
       </div>
 
       {/* Week navigation */}
-      <div className="flex items-center justify-between mb-4">
-        <Button variant="outline" size="sm" onClick={() => setWeekStart(w => addDays(w, -7))}>
-          <ChevronLeft className="h-4 w-4" />
+      <div className="flex items-center justify-between mb-5">
+        <Button variant="outline" onClick={() => setWeekStart(w => addDays(w, -7))}>
+          <ChevronLeft className="h-5 w-5" />
         </Button>
         <div className="text-center">
-          <div className="text-sm font-semibold">{formatWeekLabel(weekStart)}</div>
+          <div className="text-base font-semibold">{formatWeekLabel(weekStart)}</div>
           {weekStartStr === formatWeekStart(getMonday(new Date())) && (
-            <div className="text-xs text-primary font-medium">Diese Woche</div>
+            <div className="text-sm text-primary font-medium">Diese Woche</div>
           )}
         </div>
-        <Button variant="outline" size="sm" onClick={() => setWeekStart(w => addDays(w, 7))}>
-          <ChevronRight className="h-4 w-4" />
+        <Button variant="outline" onClick={() => setWeekStart(w => addDays(w, 7))}>
+          <ChevronRight className="h-5 w-5" />
         </Button>
       </div>
 
@@ -181,7 +181,7 @@ export default function EinkaufslistePage() {
       ) : (
         <div className="space-y-0.5">
           {unchecked.length > 0 && (
-            <p className="text-xs text-muted-foreground mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               {unchecked.length} Artikel noch zu kaufen
             </p>
           )}
@@ -200,7 +200,7 @@ export default function EinkaufslistePage() {
 
           {checked.length > 0 && (
             <>
-              <p className="text-xs text-muted-foreground mb-2 pt-1">{checked.length} erledigt</p>
+              <p className="text-sm text-muted-foreground mb-2 pt-1">{checked.length} erledigt</p>
               {checked.map(item => (
                 <ItemRow
                   key={item.id}
@@ -238,25 +238,25 @@ function ItemRow({
   onDelete: (id: string) => void
 }) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-muted/50 last:border-0 group">
+    <div className="flex items-center gap-3 py-4 border-b border-muted/50 last:border-0 group">
       <input
         type="checkbox"
         checked={item.checked}
         onChange={() => onToggle(item)}
-        className="h-4 w-4 rounded shrink-0 accent-primary cursor-pointer"
+        className="h-5 w-5 rounded shrink-0 accent-primary cursor-pointer"
       />
       <div className="flex-1 min-w-0">
-        <span className={`text-sm ${item.checked ? 'line-through text-muted-foreground' : 'font-medium'}`}>
+        <span className={`text-base ${item.checked ? 'line-through text-muted-foreground' : 'font-medium'}`}>
           {item.name}
         </span>
         {item.recipe_name && (
-          <span className={`ml-2 inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded-full border ${colorClass} ${item.checked ? 'opacity-40' : ''}`}>
+          <span className={`ml-2 inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full border ${colorClass} ${item.checked ? 'opacity-40' : ''}`}>
             {item.recipe_name}
           </span>
         )}
       </div>
       {(item.quantity != null || item.unit) && (
-        <span className={`text-xs text-muted-foreground shrink-0 tabular-nums ${item.checked ? 'opacity-40' : ''}`}>
+        <span className={`text-sm text-muted-foreground shrink-0 tabular-nums ${item.checked ? 'opacity-40' : ''}`}>
           {item.quantity != null ? item.quantity : ''}{item.unit ? ` ${item.unit}` : ''}
         </span>
       )}
@@ -264,7 +264,7 @@ function ItemRow({
         onClick={() => onDelete(item.id)}
         className="opacity-0 group-hover:opacity-100 md:transition-opacity text-muted-foreground hover:text-destructive ml-1 shrink-0"
       >
-        <Trash2 className="h-3.5 w-3.5" />
+        <Trash2 className="h-5 w-5" />
       </button>
     </div>
   )

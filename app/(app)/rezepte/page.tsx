@@ -57,8 +57,8 @@ export default function RezeptePage() {
 
   return (
     <div className="max-w-5xl mx-auto p-4">
-      <div className="flex items-center justify-between mb-4 gap-4">
-        <h1 className="text-xl font-bold shrink-0">Rezeptbuch</h1>
+      <div className="flex items-center justify-between mb-6 gap-4">
+        <h1 className="text-2xl font-bold shrink-0">Rezeptbuch</h1>
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -70,7 +70,7 @@ export default function RezeptePage() {
         </div>
         <Link
           href="/rezepte/neu"
-          className="inline-flex items-center gap-1.5 h-7 px-2.5 text-[0.8rem] font-medium rounded-[min(var(--radius-md),12px)] bg-primary text-primary-foreground hover:bg-primary/80 transition-colors shrink-0"
+          className="inline-flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/80 transition-colors shrink-0"
         >
           <Plus className="h-4 w-4" />
           Neues Rezept
