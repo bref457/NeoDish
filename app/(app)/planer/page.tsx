@@ -19,6 +19,14 @@ export default async function PlanerPage() {
         initialRecipes={recipes ?? []}
         userId={user!.id}
       />
+      <footer className="text-center py-6">
+        <a
+          href="mailto:info@neo457.ch?subject=Feedback NeoDish"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Feedback geben
+        </a>
+      </footer>
     </div>
   )
 }

@@ -36,6 +36,11 @@ export default function RegisterPage() {
 
     setSuccess(true)
     setLoading(false)
+    fetch('/api/welcome-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).catch(() => {})
     setTimeout(() => router.push('/login'), 3000)
   }
 

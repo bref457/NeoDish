@@ -230,7 +230,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} NeoDish
+        © {new Date().getFullYear()} NeoDish · essen.neo457.ch · Selbst gehostet · Kein Tracking
       </footer>
     </div>
   )

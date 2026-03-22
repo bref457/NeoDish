@@ -26,6 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#c2622b" />
+      </head>
       <body className={`${geist.variable} ${geistMono.variable} antialiased`} style={{ fontFamily: 'var(--font-geist-sans), sans-serif' }}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
