@@ -1,32 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-const NEOFLOW_URL = 'https://rnefrykihngtoromgppv.supabase.co/rest/v1/notes'
-const NEOFLOW_KEY = process.env.NEOFLOW_SERVICE_KEY!
-const NEOFLOW_USER_ID = process.env.NEOFLOW_USER_ID!
+import { Resend } from 'resend'
+import { sendTelegram } from '@/lib/notify'
 
 export async function POST(req: NextRequest) {
-  const { name, email, message } = await req.json()
-  if (!message) {
-    return NextResponse.json({ error: 'Keine Nachricht' }, { status: 400 })
+  const { content, name, email } = await req.json()
+
+  if (!content?.trim()) {
+    return NextResponse.json({ error: 'Kein Inhalt' }, { status: 400 })
   }
-  const content = `Feedback von ${name || 'Anonym'} · ${email || '–'} zu NeoDish: ${message}`
-  const res = await fetch(NEOFLOW_URL, {
+
+  const from = [name?.trim(), email?.trim()].filter(Boolean).join(' · ')
+  const fullContent = from
+    ? `Feedback von ${from} zu NeoDish: ${content.trim()}`
+    : `Feedback zu NeoDish: ${content.trim()}`
+
+  const res = await fetch(`${process.env.NEOFLOW_SUPABASE_URL}/rest/v1/notes`, {
     method: 'POST',
     headers: {
-      apikey: NEOFLOW_KEY,
-      Authorization: `Bearer ${NEOFLOW_KEY}`,
+      'apikey': process.env.NEOFLOW_SERVICE_KEY!,
+      'Authorization': `Bearer ${process.env.NEOFLOW_SERVICE_KEY!}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      user_id: NEOFLOW_USER_ID,
-      category: 'note',
-      priority: 'mittel',
+      user_id: process.env.NEOFLOW_USER_ID,
+      content: fullContent,
+      category: 'feedback',
       app_name: 'NeoDish',
-      content,
     }),
   })
-  if (!res.ok) {
-    return NextResponse.json({ error: 'Feedback konnte nicht gespeichert werden' }, { status: 500 })
-  }
+
+  if (!res.ok) return NextResponse.json({ error: 'Fehler beim Speichern' }, { status: 500 })
+
+  // Telegram-Benachrichtigung
+  const telegramText = [
+    `🍽️ <b>Neues NeoDish-Feedback</b>`,
+    ``,
+    `<b>Name:</b> ${name?.trim() || '–'}`,
+    `<b>E-Mail:</b> ${email?.trim() || '–'}`,
+    ``,
+    `<b>Feedback:</b>`,
+    content.trim(),
+  ].join('\n')
+  await sendTelegram(telegramText)
+
+  // Benachrichtigung an info@neo457.ch
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  await resend.emails.send({
+    from: 'NeoDish <info@neo457.ch>',
+    to: 'info@neo457.ch',
+    subject: `Neues Feedback von ${name || 'Unbekannt'}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:500px;padding:24px;">
+        <h2 style="color:#c2622b;margin:0 0 16px;">Neues Feedback eingegangen</h2>
+        <p style="margin:0 0 8px;color:#555;"><strong>Von:</strong> ${name || '–'}</p>
+        <p style="margin:0 0 16px;color:#555;"><strong>E-Mail:</strong> ${email || '–'}</p>
+        <div style="background:#fff7ed;border-left:4px solid #c2622b;padding:12px 16px;border-radius:4px;">
+          <p style="margin:0;color:#333;">${content.trim()}</p>
+        </div>
+      </div>
+    `,
+  })
+
   return NextResponse.json({ ok: true })
 }
