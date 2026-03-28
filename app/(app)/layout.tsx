@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Navigation from '@/components/Navigation'
+import { FeedbackWidget } from '@/components/layout/FeedbackWidget'
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -17,6 +18,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Navigation />
       {/* pb-20 reserves space for the mobile bottom tab bar */}
       <main className="flex-1 pb-20 md:pb-0 md:flex md:flex-col md:min-h-0">{children}</main>
+      <FeedbackWidget />
     </div>
   )
 }
